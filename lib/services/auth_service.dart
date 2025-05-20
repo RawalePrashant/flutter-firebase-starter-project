@@ -83,6 +83,11 @@ class AuthService {
         return null; // User cancelled the sign-in
       }
 
+      // Show loading indicator
+      if (kDebugMode) {
+        print('Google sign-in successful, getting auth details...');
+      }
+
       // Obtain the auth details from the request.
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
@@ -94,7 +99,27 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential.
       final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
-      return userCredential.user;
+      
+      // Get the user
+      final User? user = userCredential.user;
+      
+      if (user != null) {
+        // Update the user's display name if it's not set
+        if (user.displayName == null || user.displayName!.isEmpty) {
+          await user.updateDisplayName(googleUser.displayName);
+        }
+        
+        // Update the user's photo URL if it's not set
+        if (user.photoURL == null || user.photoURL!.isEmpty) {
+          await user.updatePhotoURL(googleUser.photoUrl);
+        }
+        
+        // Reload the user to get the updated profile
+        await user.reload();
+        return _firebaseAuth.currentUser;
+      }
+      
+      return user;
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         print('FirebaseAuthException on signInWithGoogle: ${e.code} - ${e.message}');

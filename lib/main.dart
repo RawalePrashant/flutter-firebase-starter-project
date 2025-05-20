@@ -9,7 +9,7 @@ import 'routes/app_routes.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/email_verification_screen.dart';
-import 'utils/constants.dart';
+// import 'utils/constants.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized.
