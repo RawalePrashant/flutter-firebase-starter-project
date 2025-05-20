@@ -137,7 +137,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: 'Login',
                         onPressed: () => _loginUser(authProvider),
                       ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 16),
+
+                // Forgot Password Link
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/forgot-password');
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
                 // Google Sign-In Button
                 CustomButton(

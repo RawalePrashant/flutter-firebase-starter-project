@@ -125,6 +125,73 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sends a verification email to the current user.
+  Future<void> sendEmailVerification() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authService.sendEmailVerification();
+    } catch (e) {
+      _errorMessage = "Error sending verification email: ${e.toString()}";
+      if (kDebugMode) {
+        print("Error sending verification email: $e");
+      }
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Checks if the current user's email is verified.
+  bool isEmailVerified() {
+    return _authService.isEmailVerified();
+  }
+
+  /// Reloads the current user to get the latest verification status.
+  Future<void> reloadUser() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _authService.reloadUser();
+      // Update the user model after reload
+      final currentUser = _authService.currentUser;
+      if (currentUser != null) {
+        _user = UserModel.fromFirebaseUser(currentUser);
+      }
+    } catch (e) {
+      _errorMessage = "Error reloading user: ${e.toString()}";
+      if (kDebugMode) {
+        print("Error reloading user: $e");
+      }
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Sends a password reset email to the given email address.
+  Future<void> sendPasswordResetEmail(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authService.sendPasswordResetEmail(email);
+    } catch (e) {
+      _errorMessage = "Error sending password reset email: ${e.toString()}";
+      if (kDebugMode) {
+        print("Error sending password reset email: $e");
+      }
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Clears any displayed error message.
   void clearError() {
     _errorMessage = null;

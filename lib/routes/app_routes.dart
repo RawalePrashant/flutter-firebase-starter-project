@@ -5,6 +5,8 @@ import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/email_verification_screen.dart';
+import '../screens/forgot_password_screen.dart';
 import '../utils/constants.dart'; // For route name constants
 
 class AppRoutes {
@@ -18,6 +20,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case AppRouteNames.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case '/verify-email':
+        return MaterialPageRoute(builder: (_) => const EmailVerificationScreen());
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       // Add more routes here as your app grows
       // case AppRouteNames.settings:
       //   return MaterialPageRoute(builder: (_) => SettingsScreen());

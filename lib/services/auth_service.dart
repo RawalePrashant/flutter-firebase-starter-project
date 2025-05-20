@@ -50,10 +50,10 @@ class AuthService {
         email: email.trim(),
         password: password.trim(),
       );
-      // You can optionally send a verification email here:
-      // if (userCredential.user != null && !userCredential.user!.emailVerified) {
-      //   await userCredential.user!.sendEmailVerification();
-      // }
+      // Send verification email after successful signup
+      if (userCredential.user != null && !userCredential.user!.emailVerified) {
+        await userCredential.user!.sendEmailVerification();
+      }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
@@ -183,6 +183,48 @@ class AuthService {
         }
         rethrow;
       }
+    }
+  }
+
+  /// Sends a verification email to the current user.
+  Future<void> sendEmailVerification() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('FirebaseAuthException on sendEmailVerification: ${e.code} - ${e.message}');
+      }
+      rethrow;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Unexpected error on sendEmailVerification: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Checks if the current user's email is verified.
+  bool isEmailVerified() {
+    return _firebaseAuth.currentUser?.emailVerified ?? false;
+  }
+
+  /// Reloads the current user to get the latest verification status.
+  Future<void> reloadUser() async {
+    try {
+      await _firebaseAuth.currentUser?.reload();
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('FirebaseAuthException on reloadUser: ${e.code} - ${e.message}');
+      }
+      rethrow;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Unexpected error on reloadUser: $e');
+      }
+      rethrow;
     }
   }
 }

@@ -8,6 +8,7 @@ import 'services/auth_service.dart';
 import 'routes/app_routes.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/email_verification_screen.dart';
 import 'utils/constants.dart';
 
 void main() async {
@@ -77,26 +78,27 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to the AuthProvider for authentication state changes.
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    // Use a StreamBuilder to listen to the auth state stream from AuthService.
-    // This ensures real-time updates when the auth state changes.
-    return StreamBuilder(
-      stream: authProvider.authStateChanges,
-      builder: (context, snapshot) {
-        // Show a loading indicator while checking auth state.
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        if (authProvider.isLoading) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
-        // If the user is authenticated, show the HomeScreen.
-        if (snapshot.hasData) {
-          return const HomeScreen();
+
+        final user = authProvider.user;
+        if (user == null) {
+          return const LoginScreen();
         }
-        // If the user is not authenticated, show the LoginScreen.
-        return const LoginScreen();
+
+        // Check if email is verified
+        if (!authProvider.isEmailVerified()) {
+          return const EmailVerificationScreen();
+        }
+
+        return const HomeScreen();
       },
     );
   }
